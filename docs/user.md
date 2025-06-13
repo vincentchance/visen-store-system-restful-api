@@ -1,41 +1,5 @@
 # User API Spec
 
-## setups admin API 
-
-Endpoint : POST /api/admin
-
-Request body: 
-```json
-{
-	"name" : "admin-visen",
-	"username" : "admin-visen",
-	"password" : "rahasia",
-}
-```
-
-Response body Success 201:
-```json
-{
-	"data" : {
-		"uuid" : "uuid-number"
-		"name" : "admin-visen",
-		"username" : "admin-visen"
-	}	
-}
-```
-
-Response body error:
-```json
-{
-	"errors": "Admin did not generated properly, please try again"
-}
-```
-
-Error Cases
-
-409 Conflict: Admin already exists
-
-400 Bad Request: Validation failed
 
 ## create user Internal --onlyadmin
 
