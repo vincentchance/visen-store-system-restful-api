@@ -17,9 +17,9 @@ Response body Success 201:
 ```json
 {
 	"data" : {
-		"name": "admin-visen",
-		"username": "admin-visen",
-		"role": "admin"
+		"uuid" : "uuid-number"
+		"name" : "admin-visen",
+		"username" : "admin-visen"
 	}	
 }
 ```
@@ -103,7 +103,7 @@ Response Body Success 200:
 
 ```json
 {
-	"token": "unique token"
+	"token": "jwt-token"
 }
 ```
 
