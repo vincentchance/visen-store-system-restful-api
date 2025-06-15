@@ -5,6 +5,10 @@
 
 Endpoint : POST /api/admin/current/user
 
+Headers: {
+	Authorization: bearer token
+}
+
 Request body: 
 ```json
 {	
@@ -34,18 +38,10 @@ Response body error:
 }
 ```
 
-Error Cases
-
-403 Forbidden for user
-
-409 Duplicate user
-
-400 Bad Request: Validation failed
-
 
 ## Login API Spec
 
-Endpoint : POST /api/admin/login
+Endpoint : POST /api/users/login
 
 Request Body : 
 ```json
