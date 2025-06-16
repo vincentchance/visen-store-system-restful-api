@@ -1,7 +1,7 @@
 import {prismaClient} from '../application/database.js';
 import { validate } from '../validation/validate.js';
 import { ResponseError } from '../error/response-error.js';
-import { createUserValidation, loginUserValidation } from '../validation/user-validation.js';
+import { createUserValidation, loginUserValidation, getUserValidation } from '../validation/user-validation.js';
 import {logger} from '../application/logging.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -53,7 +53,7 @@ const createUser = async (user, request) => {
 		throw new ResponseError(409, 'account conflict: this account already exist');
 	}
 	
-	const hashedPassword = await bcrypt.hash(request.password);
+	const hashedPassword = await bcrypt.hash(request.password, 10);
 	
 	const newUser = await prismaClient.user.create({
 		data: {
@@ -118,6 +118,54 @@ const loginUser = async (request) => {
     });
 }
 
+const getUser = async(id) => {
+	id = validate(getUserValidation, id);
+	
+	const user = await prismaClient.user.findFirst({
+		where: {
+			id: id
+		},
+		select: {
+			id: true,
+			username: true,
+			name: true,
+			token: true
+		}
+	})
+	
+	if(!user){
+		throw new ResponseError(404, 'user not found')
+	}
+	
+	return user;
+}
+
+const logoutUser = async (id) => {
+    id = validate(getUserValidation, id);
+
+    const user = await prismaClient.user.findFirst({
+        where: {
+			id: id
+        }
+    });
+
+    if (!user) {
+        throw new ResponseError(404, "user not found");
+    }
+
+    return prismaClient.user.update({
+        where: {
+            id: user.id
+        },
+        data: {
+            token: null
+        },
+        select: {
+            id: true
+        }
+    })
+}
 
 
-export default { adminSetup, createUser, loginUser }
+
+export default { adminSetup, getUser, createUser, loginUser, logoutUser }

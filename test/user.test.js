@@ -2,20 +2,115 @@ import supertest from 'supertest';
 import {web} from '../src/application/web.js';
 import { prismaClient } from '../src/application/database.js';
 import { logger } from '../src/application/logging.js';
+import { createTestUser, removeAllTestUser1, removeAllTestUser, getTestUser, createTestAdmin } from './test-utils.js';
 import bcrypt from 'bcrypt';
 
 describe('POST /api/users/login', function () {
+	beforeEach( async () => {
+		await createTestUser();
+	});
+	
+	afterEach( async () => {
+		await removeAllTestUser();
+	})
+	
 	it('should can login', async () => {
 		const result = await supertest(web)
 		.post('/api/users/login')
 		.send({
-			username: "admin-visen",
+			username: "test",
 			password:  "rahasia"
 		})
-		console.log(result);
+		
 		logger.info(result.status);
 		
 		expect(result.status).toBe(200);
 		expect(result.body.token).toBeDefined();
+	})
+})
+
+
+describe('POST /api/admin/current/user', function () {
+	
+})
+
+
+describe('DELETE /api/users/logout', function () {
+	beforeEach( async () => {
+		await createTestUser();
+	});
+	
+	afterEach( async () => {
+		await removeAllTestUser();
+	})
+	
+	it('should can logout', async () => {
+		let authToken;
+		const loginResponse = await supertest(web)
+		.post('/api/users/login')
+		.send({
+			username: "test",
+			password:  "rahasia"
+		})
+		
+		
+		expect(loginResponse.status).toBe(200);
+		expect(loginResponse.body.token).toBeDefined()
+		authToken = loginResponse.body.token;
+		
+        const result = await supertest(web)
+            .delete('/api/users/logout')
+            .set('Authorization', `Bearer ${authToken}`)
+		
+        expect(result.status).toBe(200);
+        expect(result.body.data).toBe("Ok");
+
+        const user = await getTestUser();
+	
+        expect(user.token).toBeNull();
+    });
+})
+
+
+describe('POST /api/admin/current/user', function () {
+	beforeEach( async () => {
+		await createTestAdmin();
+	});
+	
+	afterEach( async () => {
+		await removeAllTestUser();
+		await removeAllTestUser1();
+	})
+	
+	it('should can create user', async () => {
+		let authToken;
+		const loginResponse = await supertest(web)
+		.post('/api/users/login')
+		.send({
+			username: "test",
+			password:  "rahasia"
+		})
+		
+		
+		expect(loginResponse.status).toBe(200);
+		expect(loginResponse.body.token).toBeDefined()
+		authToken = loginResponse.body.token;
+		
+		const createUser = await supertest(web)
+			.post('/api/admin/current/user')
+			.set('Authorization', `Bearer ${authToken}`)
+			.send({
+				name: "test1",
+				username: "test1",
+				password: "rahasia12",
+				role: "user"
+			})
+		
+		
+        expect(createUser.status).toBe(201);
+        expect(createUser.body.data.name).toBe("test1");
+		expect(createUser.body.data.username).toBe("test1");
+		expect(createUser.body.data.password).not.toBe("rahasia12");
+		expect(createUser.body.data.role).toBe("user");
 	})
 })

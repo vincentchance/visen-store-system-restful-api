@@ -78,12 +78,12 @@ Error Cases
 
 400 Bad request: Validation failed
 
-## Update User API --onlyUser admin is forbidden update data
+## Update User API
 
 Endpoint: PATCH /api/users/current
 
 Headers: {
-	Authorization: token
+	Authorization: Bearer token
 }
 
 Request Body :
@@ -119,7 +119,7 @@ Response Body Error:
 Endpoint: GET /api/users/current
 
 Headers: {
-	Authorization: token
+	Authorization: Bearer token
 }
 
 Response Body Success 200:

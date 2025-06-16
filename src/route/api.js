@@ -8,5 +8,6 @@ userRouter.use(authMiddleware);
 
 //user API
 userRouter.post('/api/admin/current/user', userController.createUser);
+userRouter.delete('/api/users/Logout', userController.logoutUser);
 
 export { userRouter }

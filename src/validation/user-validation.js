@@ -12,4 +12,6 @@ const loginUserValidation = Joi.object({
 	password: Joi.string().max(50).required()
 });
 
-export { createUserValidation, loginUserValidation }
+const getUserValidation = Joi.string().max(80).required()
+
+export { createUserValidation, loginUserValidation, getUserValidation }
