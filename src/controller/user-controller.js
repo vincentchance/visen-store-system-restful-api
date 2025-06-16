@@ -26,6 +26,18 @@ const loginUser = async (req, res, next) => {
 	}
 }
 
+const getUser = async (req, res, next) => {
+	try{
+		const id = req.user.id
+		const result = await userService.getUser(id)
+		res.status(200).json({
+			data: result
+		})
+	} catch (err){
+		next(err)
+	}
+}
+
 const logoutUser = async (req, res, next) => {
 	try {
 		const id = req.user.id
@@ -38,4 +50,4 @@ const logoutUser = async (req, res, next) => {
 	}
 }
 
-export default { createUser, loginUser, logoutUser }
+export default { createUser, loginUser, logoutUser, getUser }

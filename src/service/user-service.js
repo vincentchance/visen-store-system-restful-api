@@ -129,7 +129,7 @@ const getUser = async(id) => {
 			id: true,
 			username: true,
 			name: true,
-			token: true
+			role: true
 		}
 	})
 	

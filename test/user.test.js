@@ -30,8 +30,40 @@ describe('POST /api/users/login', function () {
 })
 
 
-describe('POST /api/admin/current/user', function () {
+describe('GET /api/users/current', function () {
 	
+	beforeEach( async () => {
+		await createTestUser();
+	});
+	
+	afterEach( async () => {
+		await removeAllTestUser();
+	})
+	
+	it('should get user', async () => {
+		let authToken;
+		const loginResponse = await supertest(web)
+		.post('/api/users/login')
+		.send({
+			username: "test",
+			password:  "rahasia"
+		})
+		
+		
+		expect(loginResponse.status).toBe(200);
+		expect(loginResponse.body.token).toBeDefined()
+		authToken = loginResponse.body.token;
+		
+        const getUser = await supertest(web)
+            .get('/api/users/current')
+            .set('Authorization', `Bearer ${authToken}`)
+		
+		expect(getUser.status).toBe(200);
+		expect(getUser.body.data.username).toBe('test');
+		expect(getUser.body.data.name).toBe('test');
+		expect(getUser.body.data.role).toBe('user');
+		
+	})
 })
 
 
