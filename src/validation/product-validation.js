@@ -12,4 +12,7 @@ const createPriceValidation = Joi.object({
 	is_active: Joi.boolean().default(true)
 })
 
-export { createProductValidation, createPriceValidation }
+const getProductValidation = Joi.string().max(80).required()
+
+
+export { createProductValidation, createPriceValidation, getProductValidation }

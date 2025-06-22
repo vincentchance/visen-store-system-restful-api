@@ -29,4 +29,18 @@ const createProductPrice = async (req, res, next) => {
 	}
 }
 
-export default { createProduct, createProductPrice }
+const softDeleteProduct = async (req, res, next) => {
+	try {
+		const user = req.user;
+		const productId = req.params.productId;
+		
+		const result = await productService.softDeleteProduct(user, productId)
+		res.status(200).json({
+			data: result
+		})
+	} catch (err){
+		next(err)
+	}
+}
+
+export default { createProduct, createProductPrice, softDeleteProduct }

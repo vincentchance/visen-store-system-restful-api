@@ -1,6 +1,6 @@
 import {prismaClient} from '../application/database.js';
 import {validate} from '../validation/validate.js';
-import {createProductValidation, createPriceValidation } from '../validation/product-validation.js';
+import {createProductValidation, createPriceValidation, getProductValidation } from '../validation/product-validation.js';
 import {ResponseError} from '../error/response-error.js';
 
 const createProduct = async (user, request) => {
@@ -109,4 +109,81 @@ const createProductPrice = async (user, productId, request) => {
 	return updatedProduct
 }
 
-export default { createProduct, createProductPrice }
+const softDeleteProduct = async (user, productId) => {
+	
+	productId = validate(getProductValidation, productId)
+	
+	const product = await prismaClient.product.findFirst({
+		where: {
+			id: productId,
+			deleted_at: null,
+			deleted_by: null
+		},
+		include:{
+			prices: {
+				where: {
+					deleted_at: null,
+					deleted_by: null
+				}
+			}
+		}
+	});
+	
+	
+	if(!product){
+		throw new ResponseError(404, 'product not found')
+	}
+	
+	return await prismaClient.$transaction(async(prisma) => {
+		await prisma.product.update({
+			where: {
+				id: productId,
+			},
+			data: {
+				deleted_at: new Date(),
+				deleted_by: user.username
+			}
+		});
+		
+		await prisma.price.updateMany({
+			where: {
+				product_id: productId,
+				deleted_at: null
+			},
+			data: {
+				deleted_at: new Date(),
+				deleted_by: user.username,
+			}
+		})
+		
+		return await prisma.product.findFirst({
+			where: {
+				id: productId
+			},
+			select: {
+				id: true,
+				product_name: true,
+				product_category: true,
+				prices: {
+					where: {
+						is_active: true
+					},
+					select: {
+						id: true,
+						price: true,
+						start_date: true,
+						is_active: true,
+						created_by: true,
+						deleted_at: true,
+						deleted_by: true
+					}
+				},
+				deleted_at: true,
+				deleted_by: true
+			}	
+		})
+	})
+	
+}
+
+export default { createProduct, createProductPrice, softDeleteProduct }

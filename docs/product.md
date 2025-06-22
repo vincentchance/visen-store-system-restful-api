@@ -103,7 +103,7 @@ Response body error:
 
 ## Soft delete Product
 
-Endpoint : PUT /api/admin/product/:productId
+Endpoint : PATCH /api/product/:productId/softdelete
 
 Response Body Success:
 ```json
@@ -117,18 +117,21 @@ Response Body Success:
 				"id": "price_uuid"
 				"price": 12000,
 				"start_date": "2025-06-16",
-				"is_active": false //dinonaktifkan otomatis
-				"deleted_at": "2025-06-18"
+				"is_active": false, //dinonaktifkan otomatis
+				"deleted_at": "2025-06-18",
+				"deleted_by": "admin"
 			},
 			{
 				"id": "price_uuid"
 				"price": 10000,
 				"start_date": "2025-06-17",
-				"is_active" : true //harga saat ini
-				"deleted_at": "2025-06-18"
+				"is_active" : true, //harga saat ini
+				"deleted_at": "2025-06-18",
+				"deleted_by": "admin"
 			}
 		]
-		deleted_at: "2025-06-18"
+		deleted_at: "2025-06-18",
+		deleted_by: "admin"
 	}	
 }
 ```
@@ -136,6 +139,6 @@ Response Body Success:
 Response body error:
 ```json
 {
-	"errors": "Problem in server please try again"
+	"errors": "Unauthorized"
 }
 ```

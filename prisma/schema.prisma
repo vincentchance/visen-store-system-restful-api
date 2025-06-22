@@ -30,10 +30,11 @@ model User {
 
 model Product {
 	id			 	 	String @id @default(uuid()) @db.VarChar(60)
-	product_name 		String @db.VarChar(20)
-	product_category 	String @db.VarChar(20)
+	product_name 		String @unique @db.VarChar(20)
+	product_category 	String @unique @db.VarChar(20)
 	prices				Price[]
 	deleted_at			DateTime?
+	deleted_by			String?
 	
 	@@map("products")
 }
@@ -47,6 +48,7 @@ model Price {
 	created_by			String?
 	product				Product @relation(fields: [product_id], references:[id], onDelete: Cascade)
 	deleted_at			DateTime?
+	deleted_by			String?
 	
 	@@map("prices")
 }

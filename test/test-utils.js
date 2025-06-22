@@ -23,6 +23,62 @@ export const createTestAdmin = async () => {
     });
 };
 
+export const getTestProduct = async () => {
+	return prismaClient.product.findUnique({
+		where: {
+			product_name: "lifebuoy"
+		},
+		select: {
+			id: true,
+			product_name: true,
+			product_category: true,
+			prices: {
+				where: {
+					is_active: true
+				},
+				select: {
+					id: true,
+					price: true,
+					start_date: true,
+					is_active: true
+				}
+			}
+		}
+	})
+}
+
+export const createTestProduct = async () => {
+	await prismaClient.product.create({
+		data: { 
+			product_name: "lifebuoy",
+			product_category: "sabun mandi",
+			prices: {
+				create: {
+					price: 5000,
+					start_date: new Date(),
+					is_active: true
+				}
+			}
+		},
+		select: {
+			id: true,
+			product_name: true,
+			product_category: true,
+			prices: {
+				where: {
+					is_active: true
+				},
+				select: {
+					id: true,
+					price: true,
+					start_date: true,
+					is_active: true
+				}
+			}
+		}
+	})
+}
+
 
 export const getTestUser = async () => {
 	return prismaClient.user.findUnique({
