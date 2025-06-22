@@ -48,3 +48,11 @@ export const removeAllTestUser = async () => {
     });
 };
 
+export const removeAllTestProduct = async () => {
+    await prismaClient.product.deleteMany({
+        where: {
+            product_name: "lifebuoy"
+        }
+    });
+};
+

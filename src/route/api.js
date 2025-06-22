@@ -9,11 +9,11 @@ userRouter.use(authMiddleware);
 
 //user API
 userRouter.post('/api/admin/current/user', userController.createUser);
-userRouter.delete('/api/users/Logout', userController.logoutUser);
+userRouter.delete('/api/users/logout', userController.logoutUser);
 userRouter.get('/api/users/current', userController.getUser);
 
 //product API
 userRouter.post('/api/admin/product', productController.createProduct);
-userRouter.post('/api/admin/product/:productId/price', productController.createProductPrice)
+userRouter.post('/api/product/:productId/price', productController.createProductPrice)
 
 export { userRouter }

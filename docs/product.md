@@ -49,7 +49,7 @@ Response body error:
 ```
 ## Create price
 
-Endpoint : POST /api/users/product/:productId/price
+Endpoint : POST /api/product/:productId/price
 
 Headers: {
 	Authorization: bearer token

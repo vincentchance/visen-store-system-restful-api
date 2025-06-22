@@ -19,7 +19,7 @@ const loginUser = async (req, res, next) => {
 		const request = req.body;
 		const result = await userService.loginUser(request)
 		res.status(200).json({
-			token: result.token
+			token: result.data
 		})
 	} catch (err){
 		next(err)
@@ -43,7 +43,7 @@ const logoutUser = async (req, res, next) => {
 		const id = req.user.id
 		const result = await userService.logoutUser(id)
 		res.status(200).json({
-			data: 'Ok'
+			data: result.data
 		})
 	} catch (err) {
 		next(err)

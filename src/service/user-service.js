@@ -105,17 +105,9 @@ const loginUser = async (request) => {
 		expiresIn: '1d'
 	})
 	
-    return prismaClient.user.update({
-        data: {
-            token: token
-        },
-        where: {
-            id: user.id
-        },
-        select: {
-            token: true
-        }
-    });
+    return {
+		data: token
+	}
 }
 
 const getUser = async(id) => {
@@ -153,17 +145,9 @@ const logoutUser = async (id) => {
         throw new ResponseError(404, "user not found");
     }
 
-    return prismaClient.user.update({
-        where: {
-            id: user.id
-        },
-        data: {
-            token: null
-        },
-        select: {
-            id: true
-        }
-    })
+  return {
+	  data: 'Ok'
+  }
 }
 
 

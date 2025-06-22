@@ -45,9 +45,6 @@ const createProduct = async (user, request) => {
 }
 
 const createProductPrice = async (user, productId, request) => {
-	if(user.role !== 'user'){
-		throw new ResponseError(403, 'restricted access')
-	}
 	
 	const productPrice = validate(createPriceValidation, request)
 	
@@ -81,12 +78,13 @@ const createProductPrice = async (user, productId, request) => {
 			price: productPrice.price,
 			start_date: new Date(),
 			is_active: true,
-			product_id: productId
+			product_id: productId,
+			created_by: user.username
 		}
 	})
 	
 	const updatedProduct = await prismaClient.product.findFirst({
-		data: {
+		where: {
 			id: productId
 		},
 		select: {
@@ -101,7 +99,8 @@ const createProductPrice = async (user, productId, request) => {
 					id: true,
 					price: true,
 					start_date: true,
-					is_active: true
+					is_active: true,
+					created_by: true
 				}
 			}
 		}

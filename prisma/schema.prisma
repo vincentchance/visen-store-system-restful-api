@@ -24,7 +24,6 @@ model User {
 	password String  @db.VarChar(80)
 	name 	 String  @db.VarChar(50)
 	role	 Role
-	token	 String? @db.VarChar(512)
 	
 	@@map("users")
 }
@@ -45,7 +44,8 @@ model Price {
 	start_date			DateTime
 	is_active			Boolean @default(true)
 	product_id			String
-	product				Product @relation(fields: [product_id], references:[id])
+	created_by			String?
+	product				Product @relation(fields: [product_id], references:[id], onDelete: Cascade)
 	deleted_at			DateTime?
 	
 	@@map("prices")

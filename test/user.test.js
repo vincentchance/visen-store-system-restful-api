@@ -22,7 +22,7 @@ describe('POST /api/users/login', function () {
 			password:  "rahasia"
 		})
 		
-		logger.info(result.status);
+		logger.info(result.body);
 		
 		expect(result.status).toBe(200);
 		expect(result.body.token).toBeDefined();
@@ -96,10 +96,6 @@ describe('DELETE /api/users/logout', function () {
 		
         expect(result.status).toBe(200);
         expect(result.body.data).toBe("Ok");
-
-        const user = await getTestUser();
-	
-        expect(user.token).toBeNull();
     });
 })
 
@@ -114,7 +110,7 @@ describe('POST /api/admin/current/user', function () {
 		await removeAllTestUser1();
 	})
 	
-	it('should can create user', async () => {
+	it('should can create user if admin created it', async () => {
 		let authToken;
 		const loginResponse = await supertest(web)
 		.post('/api/users/login')
