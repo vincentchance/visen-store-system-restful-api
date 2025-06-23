@@ -142,3 +142,41 @@ Response body error:
 	"errors": "Unauthorized"
 }
 ```
+
+## GET all Products
+
+Endpoint : GET /api/products
+
+Response Body Success:
+
+```json
+{
+	"data" : [
+		{
+			 "id" : "uuid",
+			 "product_name" : "test",
+			 "product_category" : "test_category",
+			 "price" : 12000 (active price)
+		},
+		{
+			 "id" : "uuid",
+			 "product_name" : "test1",
+			 "product_category" : "test_category",
+			 "price" : 12000 (active price)
+		}
+	],
+	"paging" : {
+		"page" : 1,	
+		"total_item" : 10
+		"total_page" : 1,
+
+	}
+}
+``` 
+
+Response body error:
+```json
+{
+	"errors": "Unauthorized"
+}
+```

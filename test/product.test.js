@@ -141,3 +141,47 @@ describe('POST /api/product/:productId/price', function () {
 		expect(result.body.data.prices[0].created_by).toBe("test")
 	})
 })
+
+
+describe('PATCH /api/product/:productId/softdelete', function () {
+	beforeEach( async () => {
+		await createTestAdmin();
+		await createTestProduct();
+	});
+	
+	afterEach( async () => {
+		await removeAllTestProduct();
+		await removeAllTestUser();
+	})
+	
+	it('should can update soft delete', async () => {
+		let authToken;
+		const login = await supertest(web)
+		.post('/api/users/login')
+		.send({
+			username: "test",
+			password:  "rahasia"
+		})
+		
+		logger.info(login.body);
+		
+		expect(login.status).toBe(200);
+		expect(login.body.token).toBeDefined();
+		authToken = login.body.token
+		
+		const testProduct = await getTestProduct();
+		
+		const result = await supertest(web)
+		.patch(`/api/product/${testProduct.id}/softdelete`)
+		.set('Authorization', `Bearer ${authToken}`)
+		
+		logger.info(result.body)
+		
+		expect(result.status).toBe(200);
+		expect(result.body.data.deleted_at).toBeDefined();
+		expect(result.body.data.deleted_by).toBeDefined();
+		expect(result.body.data.prices).toBeDefined();
+		expect(result.body.data.prices[0].deleted_by).toBeDefined();
+		expect(result.body.data.prices[0].deleted_by).toBeDefined();
+	})
+})

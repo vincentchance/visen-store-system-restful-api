@@ -59,22 +59,6 @@ export const createTestProduct = async () => {
 					is_active: true
 				}
 			}
-		},
-		select: {
-			id: true,
-			product_name: true,
-			product_category: true,
-			prices: {
-				where: {
-					is_active: true
-				},
-				select: {
-					id: true,
-					price: true,
-					start_date: true,
-					is_active: true
-				}
-			}
 		}
 	})
 }

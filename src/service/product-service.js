@@ -1,6 +1,6 @@
 import {prismaClient} from '../application/database.js';
 import {validate} from '../validation/validate.js';
-import {createProductValidation, createPriceValidation, getProductValidation } from '../validation/product-validation.js';
+import {createProductValidation, createPriceValidation, getProductValidation, getAllProductValidation } from '../validation/product-validation.js';
 import {ResponseError} from '../error/response-error.js';
 
 const createProduct = async (user, request) => {
@@ -186,4 +186,122 @@ const softDeleteProduct = async (user, productId) => {
 	
 }
 
-export default { createProduct, createProductPrice, softDeleteProduct }
+
+const getProduct = (productId) => {
+	productId = validate(getProductValidation, productId)
+	
+	const product = await prismaClient.product.findFirst({
+		where: {
+			id: productId,
+			deleted_at: null
+		},
+		select: {
+			id: true,
+			product_name: true,
+			product_category: true,
+			prices: {
+				where: {
+					is_active: true,
+					deleted_at: null
+				},
+				select: {
+					id: true,
+					price: true,
+					start_date: true,
+					is_active: true,
+					created_by: true,
+				}
+			},
+		}	
+	});
+	
+	if(!product){
+		throw new ResponseError(404, "product not found or data has been deleted")
+	}
+	
+	return product
+}
+
+const SearchProduct = (request) => {
+	
+	request = validate(getAllProductValidation, request)
+	
+	logger.info(request)
+	//  page 1 - 1 = 0 size = 10 * 0  
+	//  page 2 - 1 = 1 size = 10 * 1 = 10 
+	const skip = ( request.page  - 1) * request.size
+	
+	const filters = []
+	
+	if(request.product_name){
+		filters.push({
+			product_name: {
+				  contains: request.product_name,
+				  mode: "insensitive" // agar tidak case-sensitive
+				}
+			});
+		}
+	if(request.product_category){
+		filters.push({
+			product_category: {
+				contains: request.product_category,
+				mode: "insensitive"
+			}
+		});
+	}
+	
+	const products = await prismaClient.product.findMany({
+		where: {
+			AND: [
+				{ deleted_at: null },
+				...filters
+			]
+			
+		},
+		take: request.size,
+		skip: skip,
+		select: {
+			id: true,
+			product_name: true,
+			product_category: true,
+			prices: {
+				where: {
+					is_active: true,
+					deleted_at: null
+				},
+				select: {
+					price: true
+				},
+				take: 1 // hanya ambil 1 harga aktif (terbaru)
+			}
+		}
+	})
+	
+	const mappedProducts = products.map(product => ({
+		id: product.id,
+		product_name: product.product_name,
+		product_category: product.product_category,
+		price: product.prices[0]?.price ?? null
+	}));
+
+	const totalItems = await prismaClient.product.count({
+		where: {
+			AND: [
+				{ deleted_at: null },
+				...filters
+			]
+		}
+	});
+	
+	return {
+		data: mappedProducts, 
+		paging: {
+			page: request.page,
+			total_item: totalItems,
+			total_page: Math.ceil(totalItems/ request.size)
+			
+		}
+	}
+}
+
+export default { createProduct, createProductPrice, softDeleteProduct, geProduct, SearchProduct}
