@@ -2,7 +2,7 @@ import supertest from 'supertest';
 import {prismaClient} from '../src/application/database.js';
 import {logger} from '../src/application/logging.js';
 import {web} from '../src/application/web.js';
-import { createTestUser, removeAllTestUser1, getTestProduct, removeAllTestUser, createTestProduct, getTestUser, createTestAdmin, removeAllTestProduct } from './test-utils.js';
+import { createTestUser, removeAllTestUser1, getTestProduct, removeAllTestUser, removeManyTestProduct, createTestProduct, createManyTestProduct, getTestUser, createTestAdmin, removeAllTestProduct } from './test-utils.js';
 
 describe('POST /api/admin/product', function () {
 	beforeEach( async () => {
@@ -26,8 +26,8 @@ describe('POST /api/admin/product', function () {
 		logger.info(login.body);
 		
 		expect(login.status).toBe(200);
-		expect(login.body.token).toBeDefined();
-		authToken = login.body.token
+		expect(login.body.data.token).toBeDefined();
+		authToken = login.body.data.token
 		
 		const result = await supertest(web)
 		.post('/api/admin/product')
@@ -73,8 +73,8 @@ describe('POST /api/admin/product', function () {
 		logger.info(login.body);
 		
 		expect(login.status).toBe(200);
-		expect(login.body.token).toBeDefined();
-		authToken = login.body.token
+		expect(login.body.data.token).toBeDefined();
+		authToken = login.body.data.token
 		
 		const result = await supertest(web)
 		.post('/api/admin/product')
@@ -116,8 +116,8 @@ describe('POST /api/product/:productId/price', function () {
 		logger.info(login.body);
 		
 		expect(login.status).toBe(200);
-		expect(login.body.token).toBeDefined();
-		authToken = login.body.token
+		expect(login.body.data.token).toBeDefined();
+		authToken = login.body.data.token
 		
 		const testProduct = await getTestProduct();
 		
@@ -166,8 +166,8 @@ describe('PATCH /api/product/:productId/softdelete', function () {
 		logger.info(login.body);
 		
 		expect(login.status).toBe(200);
-		expect(login.body.token).toBeDefined();
-		authToken = login.body.token
+		expect(login.body.data.token).toBeDefined();
+		authToken = login.body.data.token
 		
 		const testProduct = await getTestProduct();
 		
@@ -183,5 +183,114 @@ describe('PATCH /api/product/:productId/softdelete', function () {
 		expect(result.body.data.prices).toBeDefined();
 		expect(result.body.data.prices[0].deleted_by).toBeDefined();
 		expect(result.body.data.prices[0].deleted_by).toBeDefined();
+	})
+})
+
+describe('GET /api/product', function () {
+	beforeEach( async () => {
+		await createTestAdmin();
+		await createManyTestProduct();
+	}, 15000);
+	
+	afterEach( async () => {
+		await removeManyTestProduct();
+		await removeAllTestUser();
+	}, 15000)
+	
+	it('should get 10 product list', async () => {
+		let authToken;
+		const login = await supertest(web)
+		.post('/api/users/login')
+		.send({
+			username: "test",
+			password:  "rahasia"
+		})
+		
+		logger.info(login.body);
+		
+		expect(login.status).toBe(200);
+		expect(login.body.data.token).toBeDefined();
+		authToken = login.body.data.token
+		
+		const testProduct = await getTestProduct();
+		
+		const result = await supertest(web)
+		.get(`/api/product`)
+		.set('Authorization', `Bearer ${authToken}`)
+
+		logger.info(result.body);
+		expect(result.status).toBe(200);
+		
+		expect(result.body.data.length).toBe(10);
+		expect(result.body.paging.page).toBe(1);
+		expect(result.body.paging.total_item).toBe(16);
+		expect(result.body.paging.total_page).toBe(2);
+	})
+	
+	it('should turn into page 2', async () => {
+		let authToken;
+		const login = await supertest(web)
+		.post('/api/users/login')
+		.send({
+			username: "test",
+			password:  "rahasia"
+		})
+		
+		logger.info(login.body);
+		
+		expect(login.status).toBe(200);
+		expect(login.body.data.token).toBeDefined();
+		authToken = login.body.data.token
+		
+		const testProduct = await getTestProduct();
+		
+		const result = await supertest(web)
+		.get(`/api/product`)
+		.query({
+			page: 2
+		})
+		.set('Authorization', `Bearer ${authToken}`)
+
+		logger.info(result.body);
+		expect(result.status).toBe(200);
+		
+		expect(result.body.data.length).toBe(6);
+		expect(result.body.paging.page).toBe(2);
+		expect(result.body.paging.total_item).toBe(16);
+		expect(result.body.paging.total_page).toBe(2);
+	})
+	
+	it('should get query result lifebuoy0', async () => {
+		let authToken;
+		const login = await supertest(web)
+		.post('/api/users/login')
+		.send({
+			username: "test",
+			password:  "rahasia"
+		})
+		
+		logger.info(login.body);
+		
+		expect(login.status).toBe(200);
+		expect(login.body.data.token).toBeDefined();
+		authToken = login.body.data.token
+		
+		const testProduct = await getTestProduct();
+		
+		const result = await supertest(web)
+		.get(`/api/product`)
+		.query({
+			product_name: "lifebuoy0"
+		})
+		.set('Authorization', `Bearer ${authToken}`)
+
+		logger.info(result.body);
+		expect(result.status).toBe(200);
+		
+		expect(result.body.data[0].product_name).toBe("lifebuoy0");
+		expect(result.body.data.length).toBe(1);
+		expect(result.body.paging.page).toBe(1);
+		expect(result.body.paging.total_item).toBe(1);
+		expect(result.body.paging.total_page).toBe(1);
 	})
 })

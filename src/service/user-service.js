@@ -106,7 +106,7 @@ const loginUser = async (request) => {
 	})
 	
     return {
-		data: token
+		token: token
 	}
 }
 

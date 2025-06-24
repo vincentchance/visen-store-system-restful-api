@@ -35,6 +35,7 @@ model Product {
 	prices				Price[]
 	deleted_at			DateTime?
 	deleted_by			String?
+	transaction_item	TransactionItem[]
 	
 	@@map("products")
 }
@@ -53,5 +54,30 @@ model Price {
 	@@map("prices")
 }
 
+model Transaction {
+	id					String @id @default(uuid()) @db.VarChar(60)
+	transaction_label	String @unique @db.VarChar(20)
+	total				Int
+	created_by			String?
+	deleted_at			DateTime?
+	deleted_by			String?
+	transaction_item	TransactionItem[]
+	
+	@@map("transactions")
+}
 
 
+model TransactionItem {
+	id				    String @id @default(uuid()) @db.VarChar(60)
+	product_id			String @db.VarChar(60)
+	transaction_id 		String @db.VarChar(60)
+	price				Int
+	amount				Int
+	total				Int
+	product				Product @relation(fields: [product_id], references:[id])
+	transaction   		Transaction @relation(fields: [transaction_id], references: [id])
+	
+	@@index([transaction_id])
+	@@index([product_id])
+	@@map("transactionsItem")
+}	

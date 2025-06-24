@@ -19,7 +19,7 @@ const loginUser = async (req, res, next) => {
 		const request = req.body;
 		const result = await userService.loginUser(request)
 		res.status(200).json({
-			token: result.data
+			data: result
 		})
 	} catch (err){
 		next(err)

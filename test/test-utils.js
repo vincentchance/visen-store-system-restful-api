@@ -96,3 +96,29 @@ export const removeAllTestProduct = async () => {
     });
 };
 
+export const createManyTestProduct = async () => {
+	for(let x = 0; x <= 15; x++){
+		await prismaClient.product.create({
+			data: { 
+				product_name: `lifebuoy${x}`,
+				product_category: "sabun mandi",
+				prices: {
+					create: {
+						price: 5000,
+						start_date: new Date(),
+						is_active: true
+					}
+				}
+			}
+		})
+	}
+	
+}
+
+export const removeManyTestProduct = async () => {
+    await prismaClient.product.deleteMany({
+        where: {
+            product_category: "sabun mandi"
+        }
+    });
+};

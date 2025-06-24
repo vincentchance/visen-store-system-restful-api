@@ -25,7 +25,7 @@ describe('POST /api/users/login', function () {
 		logger.info(result.body);
 		
 		expect(result.status).toBe(200);
-		expect(result.body.token).toBeDefined();
+		expect(result.body.data.token).toBeDefined();
 	})
 })
 
@@ -51,8 +51,8 @@ describe('GET /api/users/current', function () {
 		
 		
 		expect(loginResponse.status).toBe(200);
-		expect(loginResponse.body.token).toBeDefined()
-		authToken = loginResponse.body.token;
+		expect(loginResponse.body.data.token).toBeDefined()
+		authToken = loginResponse.body.data.token;
 		
         const getUser = await supertest(web)
             .get('/api/users/current')
@@ -87,8 +87,8 @@ describe('DELETE /api/users/logout', function () {
 		
 		
 		expect(loginResponse.status).toBe(200);
-		expect(loginResponse.body.token).toBeDefined()
-		authToken = loginResponse.body.token;
+		expect(loginResponse.body.data.token).toBeDefined()
+		authToken = loginResponse.body.data.token;
 		
         const result = await supertest(web)
             .delete('/api/users/logout')
@@ -121,8 +121,8 @@ describe('POST /api/admin/current/user', function () {
 		
 		
 		expect(loginResponse.status).toBe(200);
-		expect(loginResponse.body.token).toBeDefined()
-		authToken = loginResponse.body.token;
+		expect(loginResponse.body.data.token).toBeDefined()
+		authToken = loginResponse.body.data.token;
 		
 		const createUser = await supertest(web)
 			.post('/api/admin/current/user')

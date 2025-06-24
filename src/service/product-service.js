@@ -46,6 +46,10 @@ const createProduct = async (user, request) => {
 
 const createProductPrice = async (user, productId, request) => {
 	
+	if(user.role ==! 'admin'){
+		throw new ResponseError(403, 'restricted access')
+	}
+	
 	const productPrice = validate(createPriceValidation, request)
 	
 	const product = await prismaClient.product.findFirst({
@@ -187,7 +191,7 @@ const softDeleteProduct = async (user, productId) => {
 }
 
 
-const getProduct = (productId) => {
+const getProduct = async (productId) => {
 	productId = validate(getProductValidation, productId)
 	
 	const product = await prismaClient.product.findFirst({
@@ -222,11 +226,10 @@ const getProduct = (productId) => {
 	return product
 }
 
-const SearchProduct = (request) => {
+const searchProduct = async (request) => {
 	
 	request = validate(getAllProductValidation, request)
 	
-	logger.info(request)
 	//  page 1 - 1 = 0 size = 10 * 0  
 	//  page 2 - 1 = 1 size = 10 * 1 = 10 
 	const skip = ( request.page  - 1) * request.size
@@ -236,16 +239,14 @@ const SearchProduct = (request) => {
 	if(request.product_name){
 		filters.push({
 			product_name: {
-				  contains: request.product_name,
-				  mode: "insensitive" // agar tidak case-sensitive
+				  contains: request.product_name
 				}
 			});
 		}
 	if(request.product_category){
 		filters.push({
 			product_category: {
-				contains: request.product_category,
-				mode: "insensitive"
+				contains: request.product_category
 			}
 		});
 	}
@@ -304,4 +305,4 @@ const SearchProduct = (request) => {
 	}
 }
 
-export default { createProduct, createProductPrice, softDeleteProduct, geProduct, SearchProduct}
+export default { createProduct, createProductPrice, softDeleteProduct, getProduct, searchProduct}

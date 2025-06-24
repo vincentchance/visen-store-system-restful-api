@@ -14,7 +14,9 @@ userRouter.get('/api/users/current', userController.getUser);
 
 //product API
 userRouter.post('/api/admin/product', productController.createProduct);
-userRouter.post('/api/product/:productId/price', productController.createProductPrice)
-userRouter.patch('/api/product/:productId/softdelete', productController.softDeleteProduct)
+userRouter.post('/api/product/:productId/price', productController.createProductPrice);
+userRouter.patch('/api/product/:productId/softdelete', productController.softDeleteProduct);
+userRouter.get('/api/product/:productId', productController.getProduct);
+userRouter.get('/api/product', productController.searchProduct);
 
 export { userRouter }

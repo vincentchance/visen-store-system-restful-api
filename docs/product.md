@@ -117,7 +117,7 @@ Response Body Success:
 				"id": "price_uuid"
 				"price": 12000,
 				"start_date": "2025-06-16",
-				"is_active": false, //dinonaktifkan otomatis
+				"is_active": false,
 				"deleted_at": "2025-06-18",
 				"deleted_by": "admin"
 			},
@@ -143,9 +143,44 @@ Response body error:
 }
 ```
 
+## GET product
+
+Endpoint : GET /api/product/:productId
+
+Response Body Success:
+
+```json 
+	"data" : {
+		"id": "uuid-current-product"
+		"product_name": "test1",
+		"product_category": "user1"
+		"prices": [
+			{
+				"id": "price_uuid"
+				"price": 12000,
+				"start_date": "2025-06-16",
+				"is_active": false //dinonaktifkan otomatis
+			},
+			{
+				"id": "price_uuid"
+				"price": 10000,
+				"start_date": "2025-06-17",
+				"is_active" : true //harga saat ini
+			}
+		]
+	}	
+```
+
+Response body error:
+```json
+{
+	"errors": "Unauthorized"
+}
+```
+
 ## GET all Products
 
-Endpoint : GET /api/products
+Endpoint : GET /api/product
 
 Response Body Success:
 
@@ -156,13 +191,13 @@ Response Body Success:
 			 "id" : "uuid",
 			 "product_name" : "test",
 			 "product_category" : "test_category",
-			 "price" : 12000 (active price)
+			 "price" : 12000 //active price
 		},
 		{
 			 "id" : "uuid",
 			 "product_name" : "test1",
 			 "product_category" : "test_category",
-			 "price" : 12000 (active price)
+			 "price" : 12000 //active price
 		}
 	],
 	"paging" : {

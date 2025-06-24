@@ -63,7 +63,9 @@ Response Body Success 200:
 
 ```json
 {
-	"token": "jwt-token"
+	"data": {
+		"token": "jwt-token"
+	}	
 }
 ```
 
