@@ -26,6 +26,23 @@ const loginUser = async (req, res, next) => {
 	}
 }
 
+const updateUser = async (req, res, next) => {
+	try {
+		const id = req.user.id;
+		const username = req.user.username;
+		const request = req.body;
+		request.id = id
+		request.username = username
+		
+		const result = await userService.updateUser(request)
+		res.status(200).json({
+			data: result
+		})
+	} catch (err) {
+		next(err)
+	}
+}
+
 const getUser = async (req, res, next) => {
 	try{
 		const id = req.user.id
@@ -50,4 +67,4 @@ const logoutUser = async (req, res, next) => {
 	}
 }
 
-export default { createUser, loginUser, logoutUser, getUser }
+export default { createUser, loginUser, logoutUser, updateUser, getUser }

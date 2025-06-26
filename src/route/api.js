@@ -11,6 +11,7 @@ userRouter.use(authMiddleware);
 userRouter.post('/api/admin/current/user', userController.createUser);
 userRouter.delete('/api/users/logout', userController.logoutUser);
 userRouter.get('/api/users/current', userController.getUser);
+userRouter.patch('/api/users/current', userController.updateUser);
 
 //product API
 userRouter.post('/api/admin/product', productController.createProduct);

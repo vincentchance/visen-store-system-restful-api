@@ -1,7 +1,7 @@
 import {prismaClient} from '../application/database.js';
 import { validate } from '../validation/validate.js';
 import { ResponseError } from '../error/response-error.js';
-import { createUserValidation, loginUserValidation, getUserValidation } from '../validation/user-validation.js';
+import { createUserValidation, loginUserValidation, getUserValidation, updateUserValidation } from '../validation/user-validation.js';
 import {logger} from '../application/logging.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -39,7 +39,7 @@ const adminSetup = async () => {
 
 const createUser = async (user, request) => {
 	
-	if(user.role === 'user'){
+	if(user.role !== 'admin'){
 		throw new ResponseError(403, 'Restricted access')
 	}
 	
@@ -110,6 +110,40 @@ const loginUser = async (request) => {
 	}
 }
 
+const updateUser = async(request) => {
+	
+	const user = validate(updateUserValidation, request);
+	
+	const userExist = await prismaClient.user.findUnique({
+		where: {
+			username: user.username
+		}
+	})
+	
+	if(!userExist){
+		throw new ResponseError(404, "user not found")
+	}
+	
+	const data = {}
+	if(user.name){
+		data.name = user.name
+	}
+	if(user.password){
+		data.password = await bcrypt.hash(user.password, 10)
+	}
+	
+	return await prismaClient.user.update({
+		where: {
+			username: user.username
+		},
+		data: data,
+		select: {
+			username: true,
+			name: true
+		}
+	})
+}
+
 const getUser = async(id) => {
 	id = validate(getUserValidation, id);
 	
@@ -152,4 +186,4 @@ const logoutUser = async (id) => {
 
 
 
-export default { adminSetup, getUser, createUser, loginUser, logoutUser }
+export default { adminSetup, getUser, createUser, updateUser, loginUser, logoutUser }

@@ -142,3 +142,46 @@ describe('POST /api/admin/current/user', function () {
 		expect(createUser.body.data.role).toBe("user");
 	})
 })
+
+describe('PATCH api/users/current', function () {
+	beforeEach( async () => {
+		await createTestAdmin();
+	});
+	
+	afterEach( async () => {
+		await removeAllTestUser();
+		await removeAllTestUser1();
+	})
+	
+	it('should can update admin account', async () => {
+		let authToken;
+		const loginResponse = await supertest(web)
+		.post('/api/users/login')
+		.send({
+			username: "test",
+			password:  "rahasia"
+		})
+		
+		
+		expect(loginResponse.status).toBe(200);
+		expect(loginResponse.body.data.token).toBeDefined()
+		authToken = loginResponse.body.data.token;
+		
+		const updateUser = await supertest(web)
+			.patch('/api/users/current')
+			.set('Authorization', `Bearer ${authToken}`)
+			.send({
+				name: "test1",
+				password: "rahasia12"
+			})
+		
+		logger.info(updateUser.body)
+		
+        expect(updateUser.status).toBe(200);
+        expect(updateUser.body.data.name).toBe("test1");
+		expect(updateUser.body.data.username).toBe("test");
+		
+		const user = await getTestUser();
+		expect(await bcrypt.compare('rahasia12',user.password)).toBe(true);
+	})
+})
